@@ -8,7 +8,7 @@ class SenderFilterService:
 
     def filter_sender(self, update):
         sender_id = update.message.chat_id
-        print 'sender %d' % sender_id
+        print ('sender %d' % sender_id)
         found = False
         if sender_id in self.authorized_users:
             found = True

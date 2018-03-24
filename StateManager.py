@@ -2,6 +2,9 @@ __author__ = 'massimone88'
 import logging
 import time
 from State import *
+from pathlib import Path
+
+IMG_DIR = Path(__file__).parent / 'pic'
 
 class StateManager:
 
@@ -22,9 +25,9 @@ class StateManager:
 
     def _init_game(self):
         self.ready = False
-        help_button = telegram.KeyboardButton(text="Start the game")
+        help_button = telegram.KeyboardButton(text="Давай начнем")
         custom_keyboard = [[help_button]]
-        reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+        reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
         self.send_keyboard(text=self.config["start_game_msg"], reply_markup=reply_markup)
 
     def _create_states(self, state_dicts):
@@ -33,7 +36,8 @@ class StateManager:
             self._states.append(state)
 
     def text_handler(self, chat_id, msg):
-        if msg == "Start the game":
+        if msg == "Давай начнем":
+            msg = None # fix
             self.ready = True
             self.send_keyboard(text="Ok", reply_markup=telegram.ReplyKeyboardRemove())
             self.next_state()
@@ -48,11 +52,22 @@ class StateManager:
         if self.is_ready() and chat_id == self.chat_id and self._current_state.position_enabled:
             self._current_state.location_handler(location)
 
-    def send_text(self, text):
+    def send_text(self, text, img=None):
+        if img is not None:
+            img = IMG_DIR / img
+            self.message_sender.sendPhoto(chat_id=self.chat_id, caption=text,photo=img.open('rb'))
+        else:
+            self.message_sender.sendMessage(chat_id=self.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN)
+
+    def send_text0(self, text):
         self.message_sender.sendMessage(chat_id=self.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN)
 
-    def send_keyboard(self, text, reply_markup):
-        self.message_sender.sendMessage(chat_id=self.chat_id, text=text, reply_markup=reply_markup)
+    def send_keyboard(self, text, reply_markup, img=None):
+        if img is not None:
+            img = IMG_DIR / img
+            self.message_sender.sendPhoto(chat_id=self.chat_id, caption=text, photo=img.open('rb'), reply_markup=reply_markup)
+        else:
+            self.message_sender.sendMessage(chat_id=self.chat_id, text=text, reply_markup=reply_markup)
 
     def next_state(self):
         if self._current_state:

@@ -20,6 +20,12 @@ class TreasureHuntState:
             self.correct_answer = config["answer"]
             self.question = config["question"]
             self.wrong_answer_reply = config["wrong_answer_reply"]
+        
+        if "img" in config.keys():
+            self.img = config["img"]
+        else:
+            self.img = None
+
         if "on_exit_reply" in config.keys():
             self.on_exit_reply = config["on_exit_reply"]
         else:
@@ -30,34 +36,34 @@ class TreasureHuntState:
 
     def on_enter(self):
         if self.position_enabled:
-            self._state_manager.send_text(self.init_msg)
-            location_button = telegram.KeyboardButton(text="Send the position", request_location=True)
+            self._state_manager.send_text(self.init_msg, self.img)
+            location_button = telegram.KeyboardButton(text="Отправить координаты", request_location=True)
             help_button = telegram.KeyboardButton(text="Help me!")
             custom_keyboard = [[location_button, help_button]]
-            reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
-            self._state_manager.send_keyboard(text="Can you send me the position when you're arrived?",
+            reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
+            self._state_manager.send_keyboard(text="Встань туда, откуда сделано фото и пришли мне координаты",
                      reply_markup=reply_markup)
         elif self.text_enabled:
             self._state_manager.send_text(self.init_msg)
-            repeat_question = telegram.KeyboardButton(text="Repeat the question")
+            repeat_question = telegram.KeyboardButton(text="Какой вопрос?")
             custom_keyboard = [[repeat_question]]
-            reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
-            self._state_manager.send_keyboard(self.question, reply_markup=reply_markup)
+            reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
+            self._state_manager.send_keyboard(self.question, reply_markup=reply_markup, img=self.img)
 
     def text_handler(self, msg):
         self.logger.debug("check if answer is correct..")
-        if msg == "Repeat the question":
-            self._state_manager.send_text(self.question)
+        if msg == "Какой вопрос?":
+            self._state_manager.send_text(self.question, self.img)
             return
         if msg.lower() == self.correct_answer:
-            self.logger.debug("Yes! go to next state!")
+            self.logger.debug("Правильно. Пойдем дальше)")
             self._state_manager.next_state()
         else:
             self.logger.debug("Yes! no send wrong_answer_reply!")
             help_button = telegram.KeyboardButton(text="Help me!")
-            repeat_question = telegram.KeyboardButton(text="Repeat the question")
+            repeat_question = telegram.KeyboardButton(text="Какой вопрос?")
             custom_keyboard = [[help_button,repeat_question]]
-            reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard)
+            reply_markup = telegram.ReplyKeyboardMarkup(custom_keyboard, resize_keyboard=True)
             self._state_manager.send_keyboard(self.wrong_answer_reply, reply_markup=reply_markup)
 
     def help_handler(self):

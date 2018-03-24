@@ -24,7 +24,7 @@ def main_loop():
     event_handler = EventHandler(sender_filter, message_sender, config, logging_user=logging_user)
     all_handler = MessageHandler(Filters.all, event_handler.handle_all)
     dispatcher.add_handler(all_handler)
-    print 'waiting new messages...'
+    print ('waiting new messages...')
     updater.start_polling()
 
 if __name__ == '__main__':

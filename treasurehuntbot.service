@@ -1,0 +1,17 @@
+[Unit]
+
+Description=treasurehuntbot
+After=multi-user.target
+
+[Service]
+
+WorkingDirectory=/home/pi/bots/TreasureHuntBot
+
+Type=idle
+ExecStart=/usr/bin/python3 /home/pi/bots/TreasureHuntBot/manage.py
+Restart=always
+
+[Install]
+
+WantedBy=multi-user.target
+

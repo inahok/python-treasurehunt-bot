@@ -9,10 +9,17 @@ class MessageSender:
         self.config = config
 
     def sendMessage(self, chat_id, text, **kwargs):
-        self.bot.sendMessage(chat_id=chat_id, text=text, **kwargs)
+        self.bot.sendMessage(chat_id=chat_id, text=text, disable_web_page_preview=True, **kwargs)
         if self.logging_user and text and chat_id != self.logging_user:
             text_backup = "To %s\n" % str(chat_id)
             text_backup += text
+            self.bot.sendMessage(chat_id=self.logging_user, text=text_backup)
+
+    def sendPhoto(self, chat_id, caption, photo, **kwargs):
+        self.bot.send_photo(chat_id=chat_id, caption=caption, photo=photo, **kwargs)
+        if self.logging_user and caption and chat_id != self.logging_user:
+            text_backup = "To %s\n" % str(chat_id)
+            text_backup += caption
             self.bot.sendMessage(chat_id=self.logging_user, text=text_backup)
 
     def sendChatAction(self, chat_id, action):

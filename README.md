@@ -53,6 +53,9 @@ Create config files with the following schema
           "init_msg": {
             "type": "string"
           },
+          "img": {
+            "type": "string"
+          },
           "help_msg": {
             "type": "string"
           },
@@ -117,6 +120,7 @@ Here an example:
     {
       "type": "position",
       "init_msg": "Go to Time Square to continue the game",
+      "img": "photo01.jpg",
       "help_msg": "Go to New York first and you're near enough to go to Time Square :)",
       "target_position": [40.758895,-73.98513100000002],
       "max_distance": 100,
@@ -131,11 +135,11 @@ Here an example:
       "answer": "white",
       "on_exit_reply": "",
       "wrong_answer_reply": "Come on! Who doesn't known Napoleon's white horse?"
-    },
-    ...
+    }
   ]
 }
 ```
 
-## Deploy to Heroku
-This repo has all requested files to deploy the application on Heroku!
+## Deploy
+
+Systemd config example: treasurehuntbot.service
